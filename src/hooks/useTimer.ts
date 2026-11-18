@@ -102,10 +102,10 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
   isCompleting = true;
   try {
     const finishedPhase = phase.value;
-    const elapsed = Math.max(
-      natural ? plannedSeconds.value : 1,
-      Math.min(plannedSeconds.value, actualElapsedSeconds()),
-    );
+    const actual = actualElapsedSeconds();
+    const elapsed = actual > 0
+      ? Math.min(plannedSeconds.value, actual)
+      : (natural ? plannedSeconds.value : 1);
     const wasLongBreak = finishedPhase === "longBreak";
     const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, cycleIndex.value);
 
