@@ -102,54 +102,54 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
   isCompleting = true;
   try {
     const finishedPhase = phase.value;
-  const elapsed = Math.max(
-    natural ? plannedSeconds.value : 1,
-    Math.min(plannedSeconds.value, actualElapsedSeconds()),
-  );
-  const wasLongBreak = finishedPhase === "longBreak";
-  const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, cycleIndex.value);
+    const elapsed = Math.max(
+      natural ? plannedSeconds.value : 1,
+      Math.min(plannedSeconds.value, actualElapsedSeconds()),
+    );
+    const wasLongBreak = finishedPhase === "longBreak";
+    const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, cycleIndex.value);
 
-  // Log every phase per data model (work and breaks alike).
-  if (natural || elapsed > 0) {
-    await addSession({
-      startedAt: sessionStartedAt.value ?? nowISO(),
-      endedAt: nowISO(),
-      type: finishedPhase,
-      plannedDuration: Math.round(plannedSeconds.value / 60),
-      actualDuration: elapsed,
-      completed: natural,
-      tags: [],
-      notes: null,
-      cycleIndex: cycleIndex.value,
-    });
-    if (finishedPhase === "work" && natural) {
-      await recordFocusForToday(elapsed);
-      const sessionsList = await db.getSessions();
-      const unlocks = await evaluateAchievements({
-        completedWorkSessions: totalCompletedWorkSessions(sessionsList),
-        currentStreak: currentStreak.value,
-        experiencedLongBreak: wasLongBreak || experiencedLongBreak(sessionsList),
-        nightOwlSession: hasNightOwlSession(sessionsList),
+    // Log every phase per data model (work and breaks alike).
+    if (natural || elapsed > 0) {
+      await addSession({
+        startedAt: sessionStartedAt.value ?? nowISO(),
+        endedAt: nowISO(),
+        type: finishedPhase,
+        plannedDuration: Math.round(plannedSeconds.value / 60),
+        actualDuration: elapsed,
+        completed: natural,
+        tags: [],
+        notes: null,
+        cycleIndex: cycleIndex.value,
       });
-      if (unlocks.length > 0) recentUnlocks.value = unlocks.map((u) => u.id);
+      if (finishedPhase === "work" && natural) {
+        await recordFocusForToday(elapsed);
+        const sessionsList = await db.getSessions();
+        const unlocks = await evaluateAchievements({
+          completedWorkSessions: totalCompletedWorkSessions(sessionsList),
+          currentStreak: currentStreak.value,
+          experiencedLongBreak: wasLongBreak || experiencedLongBreak(sessionsList),
+          nightOwlSession: hasNightOwlSession(sessionsList),
+        });
+        if (unlocks.length > 0) recentUnlocks.value = unlocks.map((u) => u.id);
+      }
     }
-  }
 
-  completedPhase.value = finishedPhase;
-  if (playSound) playCompletionSound(finishedPhase);
-  stopInterval();
-  isRunning.value = false;
-  endTimeMs = null;
-  if (next === "work" && finishedPhase === "longBreak") cycleIndex.value = 0;
-  else if (finishedPhase === "work") cycleIndex.value = nextCycle;
+    completedPhase.value = finishedPhase;
+    if (playSound) playCompletionSound(finishedPhase);
+    stopInterval();
+    isRunning.value = false;
+    endTimeMs = null;
+    if (next === "work" && finishedPhase === "longBreak") cycleIndex.value = 0;
+    else if (finishedPhase === "work") cycleIndex.value = nextCycle;
 
-  const autoStart =
-    (finishedPhase === "work" && settings.value.autoStartBreaks) ||
-    (finishedPhase !== "work" && settings.value.autoStartWork);
-  enterPhase(next, currentPlannedSeconds(next));
-  clearRuntimeTimerState();
-  persistNow();
-  if (autoStart) start();
+    const autoStart =
+      (finishedPhase === "work" && settings.value.autoStartBreaks) ||
+      (finishedPhase !== "work" && settings.value.autoStartWork);
+    enterPhase(next, currentPlannedSeconds(next));
+    clearRuntimeTimerState();
+    persistNow();
+    if (autoStart) start();
   } finally {
     isCompleting = false;
   }

@@ -20,7 +20,7 @@ export async function loadStreaks(): Promise<StreakRecord[]> {
 export async function recordFocusForToday(focusSeconds: number): Promise<void> {
   const today = todayISODate();
   const goalSeconds = Math.max(0, settings.value.dailyGoalMinutes) * 60;
-  const record = await db.addFocusToToday(focusSeconds, goalSeconds);
+  const _record = await db.addFocusToToday(focusSeconds, goalSeconds);
   await updateSettings({
     streakStartDate: settings.value.streakStartDate ?? today,
     lastActiveDate: today,
