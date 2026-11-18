@@ -1,0 +1,29 @@
+{
+  "name": "pomodoro",
+  "version": "1.0.0",
+  "description": "Local-first Pomodoro timer web app with sessions, streaks, achievements and PWA support",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "@preact/signals": "^2.11.4",
+    "idb": "^8.0.4",
+    "preact": "^11.2.0",
+    "wouter-preact": "^3.13.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.8",
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^5.8.3",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  }
+}

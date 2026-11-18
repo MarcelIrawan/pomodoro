@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-accent="coral">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2b211f" />
+    <title>Pomodoro — Offline</title>
+    <style>
+      :root {
+        --bg: #1d1614;
+        --fg: #f5ede6;
+        --accent: #ff7a59;
+        --muted: #a89a90;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        text-align: center;
+        padding: 2rem;
+      }
+      .emoji {
+        font-size: 4rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      p {
+        color: var(--muted);
+        margin: 0;
+        max-width: 32ch;
+      }
+      a {
+        color: var(--accent);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="emoji" role="img" aria-label="Timer offline">🍅</div>
+    <h1>You're offline</h1>
+    <p>The timer still works offline once the app has been loaded once. Open Pomodoro again to continue.</p>
+    <a href="/">Back to Focus Timer</a>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "description": "Cloudflare Pages routing: SPA fallback serves index.html for all non-file routes",
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/assets/*",
+    "/sounds/*",
+    "/icons/*",
+    "/manifest.webmanifest",
+    "/offline.html",
+    "/404.html",
+    "/favicon.svg"
+  ]
+}

@@ -1,0 +1,104 @@
+/* Design tokens (ADR-002): plain CSS custom properties, themable via data-attributes. */
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.16);
+
+  --transition-fast: 120ms ease;
+  --transition-base: 200ms ease;
+
+  /* Accent palettes (F16): default coral; overridden by [data-accent]. */
+  --accent: #ff7a59;
+  --accent-strong: #e85c3a;
+  --accent-soft: #ffe9e2;
+  --accent-contrast: #ffffff;
+
+  --bg: #faf7f4;
+  --bg-subtle: #f3ede8;
+  --fg: #2b211f;
+  --fg-muted: #6f615c;
+  --card: #ffffff;
+  --card-border: #e7ddd6;
+  --ring-track: #ece3dc;
+  --success: #2f9e6e;
+  --danger: #d64545;
+  --info: #3b82c4;
+  --focus-ring: #ff7a59;
+}
+
+[data-accent='mint'] {
+  --accent: #3ddc97;
+  --accent-strong: #25b87d;
+  --accent-soft: #dff7ec;
+  --accent-contrast: #10332a;
+  --focus-ring: #3ddc97;
+}
+
+[data-accent='lavender'] {
+  --accent: #a78bfa;
+  --accent-strong: #8b6cf0;
+  --accent-soft: #efeafd;
+  --accent-contrast: #ffffff;
+  --focus-ring: #a78bfa;
+}
+
+[data-accent='sunset'] {
+  --accent: #fb923c;
+  --accent-strong: #ea720f;
+  --accent-soft: #ffeedd;
+  --accent-contrast: #ffffff;
+  --focus-ring: #fb923c;
+}
+
+[data-accent='ocean'] {
+  --accent: #38bdf8;
+  --accent-strong: #1d9be0;
+  --accent-soft: #dff2fd;
+  --accent-contrast: #082a3d;
+  --focus-ring: #38bdf8;
+}
+
+[data-theme='dark'] {
+  --bg: #171110;
+  --bg-subtle: #211917;
+  --fg: #f5ece7;
+  --fg-muted: #b3a49d;
+  --card: #241b18;
+  --card-border: #3a2d28;
+  --ring-track: #3a2d28;
+  --accent-soft: #3d241c;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+  }
+}
+
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

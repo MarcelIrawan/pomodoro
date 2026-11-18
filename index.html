@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-theme="system" data-accent="coral">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#2b211f" />
+    <meta name="description" content="Local-first Pomodoro timer. Track focus sessions, streaks and achievements offline." />
+    <title>Pomodoro — Focus Timer</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <script>
+      // Prevent theme flash: apply stored theme before first paint.
+      try {
+        var raw = localStorage.getItem('pomodoro.settings.theme')
+        var theme = raw ? JSON.parse(raw).theme : 'system'
+        var dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light'
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
