@@ -35,6 +35,7 @@ let endTimeMs: number | null = null;
 let _phaseStartMs: number | null = null;
 let intervalId: ReturnType<typeof setInterval> | null = null;
 let lastPersistMs = 0;
+let isCompleting = false;
 
 function currentPlannedSeconds(target: Phase): number {
   const s = settings.value;
@@ -97,7 +98,10 @@ function actualElapsedSeconds(): number {
 
 /** Completes the current phase: logs session, streaks, achievements, sound, auto-switch. */
 async function completePhase(natural: boolean, playSound: boolean): Promise<void> {
-  const finishedPhase = phase.value;
+  if (isCompleting) return;
+  isCompleting = true;
+  try {
+    const finishedPhase = phase.value;
   const elapsed = Math.max(
     natural ? plannedSeconds.value : 1,
     Math.min(plannedSeconds.value, actualElapsedSeconds()),
@@ -146,6 +150,9 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
   clearRuntimeTimerState();
   persistNow();
   if (autoStart) start();
+  } finally {
+    isCompleting = false;
+  }
 }
 
 async function silentExpiredComplete(): Promise<void> {

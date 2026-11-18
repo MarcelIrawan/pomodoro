@@ -161,6 +161,26 @@ export class POMDatabase {
     return db.getAll(STORES.STREAKS);
   }
 
+  /** Atomically add focus seconds to today's streak record. Returns the updated record. */
+  async addFocusToToday(focusSeconds: number, goalSeconds: number): Promise<StreakRecord> {
+    const db = await this.requireDb();
+    const today = new Date().toISOString().slice(0, 10);
+    const tx = db.transaction(STORES.STREAKS, "readwrite");
+    const store = tx.objectStore(STORES.STREAKS);
+    const existing = (await store.get(today)) as StreakRecord | undefined;
+    const sessionsCount = (existing?.sessionsCount ?? 0) + 1;
+    const totalFocusSeconds = (existing?.totalFocusSeconds ?? 0) + focusSeconds;
+    const record: StreakRecord = {
+      date: today,
+      sessionsCount,
+      totalFocusSeconds,
+      goalMet: goalSeconds > 0 && totalFocusSeconds >= goalSeconds,
+    };
+    await store.put(record, today);
+    await tx.done;
+    return record;
+  }
+
   async upsertStreak(record: StreakRecord): Promise<void> {
     const db = await this.requireDb();
     await db.put(STORES.STREAKS, record, record.date);

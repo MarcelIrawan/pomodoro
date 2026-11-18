@@ -19,21 +19,13 @@ export async function loadStreaks(): Promise<StreakRecord[]> {
 
 export async function recordFocusForToday(focusSeconds: number): Promise<void> {
   const today = todayISODate();
-  const existing = (await db.getStreak(today)) as StreakRecord | undefined;
-  const sessionsCount = (existing?.sessionsCount ?? 0) + 1;
-  const totalFocusSeconds = (existing?.totalFocusSeconds ?? 0) + focusSeconds;
   const goalSeconds = Math.max(0, settings.value.dailyGoalMinutes) * 60;
-  const record: StreakRecord = {
-    date: today,
-    sessionsCount,
-    totalFocusSeconds,
-    goalMet: goalSeconds > 0 && totalFocusSeconds >= goalSeconds,
-  };
-  await db.upsertStreak(record);
+  const record = await db.addFocusToToday(focusSeconds, goalSeconds);
   await updateSettings({
     streakStartDate: settings.value.streakStartDate ?? today,
     lastActiveDate: today,
   });
+  // Refresh local state from DB to keep signals in sync
   streaksState.value = await db.getAllStreaks();
 }
 
