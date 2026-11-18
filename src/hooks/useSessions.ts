@@ -4,7 +4,12 @@
 import { computed, signal } from "@preact/signals";
 import { todayISODate, toISODate } from "../lib/date.ts";
 import { db } from "../lib/db.ts";
-import { completedWorkSessions, focusSecondsByDay, totalFocusSeconds } from "../lib/stats.ts";
+import {
+  completedWorkSessions,
+  focusSecondsByDay,
+  sessionLocalDate,
+  totalFocusSeconds,
+} from "../lib/stats.ts";
 import type { Session } from "../types/index.ts";
 
 const sessionsState = signal<Session[]>([]);
@@ -52,11 +57,11 @@ const statsSnapshot = computed<StatsSnapshot>(() => {
   const todayKey = todayISODate();
   const completedWork = completedWorkSessions(sessions);
   const todayFocus = completedWork
-    .filter((s) => s.startedAt.slice(0, 10) === todayKey)
+    .filter((s) => sessionLocalDate(s) === todayKey)
     .reduce((sum, s) => sum + s.actualDuration, 0);
   const histogram = weekHistogram(sessions);
   const weekSessions = sessions.filter((s) =>
-    histogram.some((h) => h.day === s.startedAt.slice(0, 10)),
+    histogram.some((h) => h.day === sessionLocalDate(s)),
   ).length;
   return {
     totalFocusSeconds: totalFocusSeconds(sessions),
@@ -71,7 +76,7 @@ const monthHistogram = computed<{ day: string; sessions: number }[]>(() => {
   const sessions = sessionsState.value;
   const histogram = focusSecondsByDay(sessions, 30, toISODate);
   return Object.keys(histogram).map((day) => {
-    const count = sessions.filter((s) => s.startedAt.slice(0, 10) === day).length;
+    const count = sessions.filter((s) => sessionLocalDate(s) === day).length;
     return { day, sessions: count };
   });
 });

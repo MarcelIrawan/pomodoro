@@ -1,5 +1,11 @@
 // Pure aggregation helpers over Session records — no DOM, no idb.
 import type { Session } from "../types/index.ts";
+import { toISODate } from "./date.ts";
+
+/** Local calendar day (YYYY-MM-DD) of a session start. startedAt is stored as UTC ISO. */
+export function sessionLocalDate(session: Pick<Session, "startedAt">): string {
+  return toISODate(new Date(session.startedAt));
+}
 
 export function completedWorkSessions(sessions: Session[]): Session[] {
   return sessions.filter((s) => s.type === "work" && s.completed);
@@ -10,7 +16,7 @@ export function totalFocusSeconds(sessions: Session[]): number {
 }
 
 export function sessionsOnDate(sessions: Session[], isoDate: string): Session[] {
-  return sessions.filter((s) => s.startedAt.slice(0, 10) === isoDate);
+  return sessions.filter((s) => sessionLocalDate(s) === isoDate);
 }
 
 export function focusSecondsOnDate(sessions: Session[], isoDate: string): number {

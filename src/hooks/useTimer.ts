@@ -102,40 +102,17 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
   isCompleting = true;
   try {
     const finishedPhase = phase.value;
+    const finishedCycle = cycleIndex.value;
+    const startedAt = sessionStartedAt.value ?? nowISO();
+    const endedAt = nowISO();
+    const planned = plannedSeconds.value;
     const actual = actualElapsedSeconds();
-    const elapsed =
-      actual > 0 ? Math.min(plannedSeconds.value, actual) : natural ? plannedSeconds.value : 1;
+    const elapsed = actual > 0 ? Math.min(planned, actual) : natural ? planned : 1;
     const wasLongBreak = finishedPhase === "longBreak";
-    const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, cycleIndex.value);
+    const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, finishedCycle);
 
-    // Log every phase per data model (work and breaks alike).
-    if (natural || elapsed > 0) {
-      await addSession({
-        startedAt: sessionStartedAt.value ?? nowISO(),
-        endedAt: nowISO(),
-        type: finishedPhase,
-        plannedDuration: Math.round(plannedSeconds.value / 60),
-        actualDuration: elapsed,
-        completed: natural,
-        tags: [],
-        notes: null,
-        cycleIndex: cycleIndex.value,
-      });
-      if (finishedPhase === "work" && natural) {
-        await recordFocusForToday(elapsed);
-        const sessionsList = await db.getSessions();
-        const unlocks = await evaluateAchievements({
-          completedWorkSessions: totalCompletedWorkSessions(sessionsList),
-          currentStreak: currentStreak.value,
-          experiencedLongBreak: wasLongBreak || experiencedLongBreak(sessionsList),
-          nightOwlSession: hasNightOwlSession(sessionsList),
-        });
-        if (unlocks.length > 0) recentUnlocks.value = unlocks.map((u) => u.id);
-      }
-    }
-
-    completedPhase.value = finishedPhase;
-    if (playSound) playCompletionSound(finishedPhase);
+    // 1) Leave the finished phase FIRST (synchronously). The tick loop must never see
+    //    "running && remaining <= 0" again, whatever happens to the storage calls below.
     stopInterval();
     isRunning.value = false;
     endTimeMs = null;
@@ -146,9 +123,47 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
       (finishedPhase === "work" && settings.value.autoStartBreaks) ||
       (finishedPhase !== "work" && settings.value.autoStartWork);
     enterPhase(next, currentPlannedSeconds(next));
+    completedPhase.value = finishedPhase;
+    if (playSound) {
+      try {
+        playCompletionSound(finishedPhase);
+      } catch (err) {
+        console.error("[pomodoro] completion sound failed", err);
+      }
+    }
     clearRuntimeTimerState();
     persistNow();
     if (autoStart) start();
+
+    // 2) Record the finished phase. A storage failure must not re-run completion.
+    try {
+      if (natural || elapsed > 0) {
+        await addSession({
+          startedAt,
+          endedAt,
+          type: finishedPhase,
+          plannedDuration: Math.round(planned / 60),
+          actualDuration: elapsed,
+          completed: natural,
+          tags: [],
+          notes: null,
+          cycleIndex: finishedCycle,
+        });
+        if (finishedPhase === "work" && natural) {
+          await recordFocusForToday(elapsed);
+          const sessionsList = await db.getSessions();
+          const unlocks = await evaluateAchievements({
+            completedWorkSessions: totalCompletedWorkSessions(sessionsList),
+            currentStreak: currentStreak.value,
+            experiencedLongBreak: wasLongBreak || experiencedLongBreak(sessionsList),
+            nightOwlSession: hasNightOwlSession(sessionsList),
+          });
+          if (unlocks.length > 0) recentUnlocks.value = unlocks.map((u) => u.id);
+        }
+      }
+    } catch (err) {
+      console.error("[pomodoro] failed to record finished phase", err);
+    }
   } finally {
     isCompleting = false;
   }

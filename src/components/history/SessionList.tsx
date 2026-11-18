@@ -1,12 +1,13 @@
 // Session list grouped by day (F8). Clicking a row expands notes/tags inline.
 import { useState } from "preact/hooks";
 import { formatDuration } from "../../lib/date.ts";
+import { sessionLocalDate } from "../../lib/stats.ts";
 import type { Session } from "../../types/index.ts";
 import { cn } from "../../utils/cn.ts";
 import { IconTag } from "../ui/Icons.tsx";
 
 function dayKey(session: Session): string {
-  return session.startedAt.slice(0, 10);
+  return sessionLocalDate(session);
 }
 
 const TYPE_LABEL: Record<Session["type"], string> = {

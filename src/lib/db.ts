@@ -21,6 +21,7 @@ import {
   type Settings,
   type StreakRecord,
 } from "../types/index.ts";
+import { todayISODate } from "./date.ts";
 
 // Schema versions
 export const DB_VERSION = 1;
@@ -164,7 +165,7 @@ export class POMDatabase {
   /** Atomically add focus seconds to today's streak record. Returns the updated record. */
   async addFocusToToday(focusSeconds: number, goalSeconds: number): Promise<StreakRecord> {
     const db = await this.requireDb();
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISODate();
     const tx = db.transaction(STORES.STREAKS, "readwrite");
     const store = tx.objectStore(STORES.STREAKS);
     const existing = (await store.get(today)) as StreakRecord | undefined;
@@ -176,14 +177,14 @@ export class POMDatabase {
       totalFocusSeconds,
       goalMet: goalSeconds > 0 && totalFocusSeconds >= goalSeconds,
     };
-    await store.put(record, today);
+    await store.put(record);
     await tx.done;
     return record;
   }
 
   async upsertStreak(record: StreakRecord): Promise<void> {
     const db = await this.requireDb();
-    await db.put(STORES.STREAKS, record, record.date);
+    await db.put(STORES.STREAKS, record);
   }
 
   // Achievements API
@@ -200,7 +201,7 @@ export class POMDatabase {
     // unlockedAt only stamped once progress actually reaches 1.
     const unlockedAt =
       existing?.unlockedAt ?? (nextProgress >= 1 ? new Date().toISOString() : null);
-    await db.put(STORES.ACHIEVEMENTS, { id, unlockedAt, progress: nextProgress }, id);
+    await db.put(STORES.ACHIEVEMENTS, { id, unlockedAt, progress: nextProgress });
   }
 
   async getAllAchievements(): Promise<Achievement[]> {
