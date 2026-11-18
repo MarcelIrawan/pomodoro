@@ -1,27 +1,26 @@
 // Core timer: Preact signals + drift-corrected wall clock + persistence (ADR-003, F1–F4).
-import { computed, signal } from '@preact/signals';
-
-import { db } from '../lib/db.ts';
-import { evaluateAchievements } from './useAchievements.ts';
-import { playCompletionSound } from './useAudio.ts';
-import { addSession } from './useSessions.ts';
-import { settings } from './useSettings.ts';
-import { currentStreak, loadStreaks, recordFocusForToday } from './useStreaks.ts';
-import { nextPhase, phasePlannedSeconds, remainingMs } from '../lib/timer-math.ts';
-import { nowISO } from '../lib/date.ts';
-import {
-  clearRuntimeTimerState,
-  readRuntimeTimerState,
-  writeRuntimeTimerState,
-} from '../lib/storage.ts';
+import { computed, signal } from "@preact/signals";
+import { nowISO } from "../lib/date.ts";
+import { db } from "../lib/db.ts";
 import {
   experiencedLongBreak,
   hasNightOwlSession,
   totalCompletedWorkSessions,
-} from '../lib/stats.ts';
-import type { Phase } from '../types/index.ts';
+} from "../lib/stats.ts";
+import {
+  clearRuntimeTimerState,
+  readRuntimeTimerState,
+  writeRuntimeTimerState,
+} from "../lib/storage.ts";
+import { nextPhase, phasePlannedSeconds, remainingMs } from "../lib/timer-math.ts";
+import type { Phase } from "../types/index.ts";
+import { evaluateAchievements } from "./useAchievements.ts";
+import { playCompletionSound } from "./useAudio.ts";
+import { addSession } from "./useSessions.ts";
+import { settings } from "./useSettings.ts";
+import { currentStreak, recordFocusForToday } from "./useStreaks.ts";
 
-const phase = signal<Phase>('work');
+const phase = signal<Phase>("work");
 const isRunning = signal(false);
 const plannedSeconds = signal(settings.value.workMinutes * 60);
 const remainingSeconds = signal(plannedSeconds.value);
@@ -33,7 +32,7 @@ const completedPhase = signal<Phase | null>(null);
 const recentUnlocks = signal<string[]>([]);
 
 let endTimeMs: number | null = null;
-let phaseStartMs: number | null = null;
+let _phaseStartMs: number | null = null;
 let intervalId: ReturnType<typeof setInterval> | null = null;
 let lastPersistMs = 0;
 
@@ -82,13 +81,16 @@ function enterPhase(target: Phase, planned: number): void {
   remainingSeconds.value = planned;
   isRunning.value = false;
   endTimeMs = null;
-  phaseStartMs = null;
+  _phaseStartMs = null;
   sessionStartedAt.value = null; // set when the user actually presses start for work
 }
 
 function actualElapsedSeconds(): number {
   if (sessionStartedAt.value) {
-    return Math.max(0, Math.floor((Date.now() - new Date(sessionStartedAt.value).getTime()) / 1000));
+    return Math.max(
+      0,
+      Math.floor((Date.now() - new Date(sessionStartedAt.value).getTime()) / 1000),
+    );
   }
   return Math.max(0, plannedSeconds.value - remainingSeconds.value);
 }
@@ -100,7 +102,7 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
     natural ? plannedSeconds.value : 1,
     Math.min(plannedSeconds.value, actualElapsedSeconds()),
   );
-  const wasLongBreak = finishedPhase === 'longBreak';
+  const wasLongBreak = finishedPhase === "longBreak";
   const { phase: next, cycleIndex: nextCycle } = nextPhase(finishedPhase, cycleIndex.value);
 
   // Log every phase per data model (work and breaks alike).
@@ -116,7 +118,7 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
       notes: null,
       cycleIndex: cycleIndex.value,
     });
-    if (finishedPhase === 'work' && natural) {
+    if (finishedPhase === "work" && natural) {
       await recordFocusForToday(elapsed);
       const sessionsList = await db.getSessions();
       const unlocks = await evaluateAchievements({
@@ -134,12 +136,12 @@ async function completePhase(natural: boolean, playSound: boolean): Promise<void
   stopInterval();
   isRunning.value = false;
   endTimeMs = null;
-  if (next === 'work' && finishedPhase === 'longBreak') cycleIndex.value = 0;
-  else if (finishedPhase === 'work') cycleIndex.value = nextCycle;
+  if (next === "work" && finishedPhase === "longBreak") cycleIndex.value = 0;
+  else if (finishedPhase === "work") cycleIndex.value = nextCycle;
 
   const autoStart =
-    (finishedPhase === 'work' && settings.value.autoStartBreaks) ||
-    (finishedPhase !== 'work' && settings.value.autoStartWork);
+    (finishedPhase === "work" && settings.value.autoStartBreaks) ||
+    (finishedPhase !== "work" && settings.value.autoStartWork);
   enterPhase(next, currentPlannedSeconds(next));
   clearRuntimeTimerState();
   persistNow();
@@ -153,16 +155,20 @@ async function silentExpiredComplete(): Promise<void> {
 
 export function start(): void {
   if (isRunning.value) return;
-  if (typeof window !== 'undefined' && 'Notification' in window && settings.value.notificationsEnabled) {
-    if (Notification.permission === 'default') {
+  if (
+    typeof window !== "undefined" &&
+    "Notification" in window &&
+    settings.value.notificationsEnabled
+  ) {
+    if (Notification.permission === "default") {
       void Notification.requestPermission();
     }
   }
   const now = Date.now();
-  if (phase.value === 'work' && !sessionStartedAt.value) {
+  if (phase.value === "work" && !sessionStartedAt.value) {
     sessionStartedAt.value = new Date(now).toISOString();
   }
-  phaseStartMs = now;
+  _phaseStartMs = now;
   endTimeMs = now + remainingSeconds.value * 1000;
   isRunning.value = true;
   lastPersistMs = now;
@@ -208,7 +214,7 @@ export function reset(): void {
 export function restoreRuntimeState(): void {
   const saved = readRuntimeTimerState();
   if (!saved) {
-    enterPhase('work', currentPlannedSeconds('work'));
+    enterPhase("work", currentPlannedSeconds("work"));
     return;
   }
   phase.value = saved.phase;
@@ -225,7 +231,7 @@ export function restoreRuntimeState(): void {
       remainingSeconds.value = Math.ceil(remaining);
       endTimeMs = Date.now() + remainingSeconds.value * 1000;
       isRunning.value = true;
-      phaseStartMs = Date.now();
+      _phaseStartMs = Date.now();
       startInterval();
     }
   } else {
@@ -234,8 +240,8 @@ export function restoreRuntimeState(): void {
 }
 
 export function handleVisibilityChange(): void {
-  if (typeof document === 'undefined') return;
-  if (document.visibilityState === 'hidden') {
+  if (typeof document === "undefined") return;
+  if (document.visibilityState === "hidden") {
     persistNow();
     return;
   }
@@ -274,4 +280,3 @@ export function useTimer() {
     restoreRuntimeState,
   };
 }
-

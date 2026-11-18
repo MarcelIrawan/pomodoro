@@ -1,24 +1,24 @@
 // Inline Lucide-subset SVG icons (ADR-006): ~500 bytes each, currentColor styling.
-import type { JSX } from 'preact';
+import type { JSX } from "preact";
 
 interface IconProps {
   size?: number;
   class?: string;
 }
 
-function base(props: IconProps): JSX.IntrinsicElements['svg'] {
+function base(props: IconProps): JSX.IntrinsicElements["svg"] {
   return {
     width: props.size ?? 20,
     height: props.size ?? 20,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
     strokeWidth: 2,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
     class: props.class,
-    'aria-hidden': 'true',
-    focusable: 'false',
+    "aria-hidden": "true",
+    focusable: "false",
   };
 }
 

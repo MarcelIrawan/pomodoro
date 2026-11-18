@@ -1,12 +1,11 @@
 // Streak calculation (F12, docs/REQUIREMENTS.md derived rules).
 // Current streak = consecutive goalMet days ending at the last active date.
 
-import { computed, signal } from '@preact/signals';
-
-import { db } from '../lib/db.ts';
-import { daysBetween, todayISODate } from '../lib/date.ts';
-import { settings, updateSettings } from './useSettings.ts';
-import type { StreakRecord } from '../types/index.ts';
+import { computed, signal } from "@preact/signals";
+import { daysBetween, todayISODate } from "../lib/date.ts";
+import { db } from "../lib/db.ts";
+import type { StreakRecord } from "../types/index.ts";
+import { settings, updateSettings } from "./useSettings.ts";
 
 const streaksState = signal<StreakRecord[]>([]);
 const loaded = signal(false);
@@ -42,7 +41,7 @@ export async function recordFocusForToday(focusSeconds: number): Promise<void> {
 function computeCurrentStreak(records: StreakRecord[]): number {
   const byDate = new Map(records.map((r) => [r.date, r] as const));
   const today = todayISODate();
-  let cursor = Date.parse(today + 'T12:00:00');
+  let cursor = Date.parse(`${today}T12:00:00`);
   let streak = 0;
   const todayRecord = byDate.get(today);
   if (todayRecord && !todayRecord.goalMet) {
@@ -51,9 +50,9 @@ function computeCurrentStreak(records: StreakRecord[]): number {
   }
   for (let i = 0; i < 10_000; i += 1) {
     const d = new Date(cursor);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     const record = byDate.get(key);
-    if (!record || !record.goalMet) break;
+    if (!record?.goalMet) break;
     streak += 1;
     cursor -= 86_400_000;
   }

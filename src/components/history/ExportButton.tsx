@@ -1,19 +1,23 @@
 // Export button (F11): downloads the given sessions as CSV or JSON.
-import { useState } from 'preact/hooks';
-import { sessionsToCSV, sessionsToJSON, downloadTextFile } from '../../lib/export.ts';
-import { Button } from '../ui/Button.tsx';
-import { IconDownload } from '../ui/Icons.tsx';
-import type { Session } from '../../types/index.ts';
+import { useState } from "preact/hooks";
+import { downloadTextFile, sessionsToCSV, sessionsToJSON } from "../../lib/export.ts";
+import type { Session } from "../../types/index.ts";
+import { Button } from "../ui/Button.tsx";
+import { IconDownload } from "../ui/Icons.tsx";
 
 export function ExportButton({ sessions }: { sessions: Session[] }) {
-  const [format, setFormat] = useState<'csv' | 'json'>('csv');
+  const [format, setFormat] = useState<"csv" | "json">("csv");
 
   const exportNow = () => {
     const stamp = new Date().toISOString().slice(0, 10);
-    if (format === 'csv') {
-      downloadTextFile(`pomodoro-sessions-${stamp}.csv`, sessionsToCSV(sessions), 'text/csv');
+    if (format === "csv") {
+      downloadTextFile(`pomodoro-sessions-${stamp}.csv`, sessionsToCSV(sessions), "text/csv");
     } else {
-      downloadTextFile(`pomodoro-sessions-${stamp}.json`, sessionsToJSON(sessions), 'application/json');
+      downloadTextFile(
+        `pomodoro-sessions-${stamp}.json`,
+        sessionsToJSON(sessions),
+        "application/json",
+      );
     }
   };
 
@@ -22,7 +26,7 @@ export function ExportButton({ sessions }: { sessions: Session[] }) {
       <select
         class="export-button__select"
         value={format}
-        onChange={(event) => setFormat((event.target as HTMLSelectElement).value as 'csv' | 'json')}
+        onChange={(event) => setFormat((event.target as HTMLSelectElement).value as "csv" | "json")}
         aria-label="Export format"
       >
         <option value="csv">CSV</option>

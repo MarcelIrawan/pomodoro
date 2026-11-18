@@ -11,7 +11,7 @@
  * Interface types live in src/types/index.ts; keep them in sync with docs/DATABASE.md.
  */
 
-import { type IDBPDatabase, openDB } from 'idb';
+import { type IDBPDatabase, openDB } from "idb";
 
 import {
   type Achievement,
@@ -20,19 +20,19 @@ import {
   type Session,
   type Settings,
   type StreakRecord,
-} from '../types/index.ts';
+} from "../types/index.ts";
 
 // Schema versions
 export const DB_VERSION = 1;
-export const DB_NAME = 'pomodoro-db';
+export const DB_NAME = "pomodoro-db";
 
 // Store names
 export const STORES = {
-  SETTINGS: 'settings',
-  SESSIONS: 'sessions',
-  STREAKS: 'streaks',
-  ACHIEVEMENTS: 'achievements',
-  SOUND_PACKS: 'soundPacks',
+  SETTINGS: "settings",
+  SESSIONS: "sessions",
+  STREAKS: "streaks",
+  ACHIEVEMENTS: "achievements",
+  SOUND_PACKS: "soundPacks",
 } as const;
 
 export type StoreName = (typeof STORES)[keyof typeof STORES];
@@ -43,18 +43,18 @@ interface DatabaseSchema {
     key: string;
     value: Session;
     indexes: {
-      'by-type': string;
-      'by-startedAt': string;
+      "by-type": string;
+      "by-startedAt": string;
       // Boolean is not a valid IDB key: index is created per docs/DATABASE.md
       // but callers filter `completed` in memory.
-      'by-completed': never;
+      "by-completed": never;
     };
   };
   [STORES.STREAKS]: { key: string; value: StreakRecord };
   [STORES.ACHIEVEMENTS]: {
     key: string;
     value: Achievement;
-    indexes: { 'by-unlockedAt': string };
+    indexes: { "by-unlockedAt": string };
   };
   [STORES.SOUND_PACKS]: { key: string; value: unknown };
 }
@@ -85,17 +85,17 @@ export class POMDatabase {
     db.createObjectStore(STORES.SETTINGS);
 
     // Sessions: objectStore keyed by uuid
-    const sessionsStore = db.createObjectStore(STORES.SESSIONS, { keyPath: 'id' });
-    sessionsStore.createIndex('by-type', 'type', { unique: false });
-    sessionsStore.createIndex('by-startedAt', 'startedAt', { unique: false });
-    sessionsStore.createIndex('by-completed', 'completed', { unique: false });
+    const sessionsStore = db.createObjectStore(STORES.SESSIONS, { keyPath: "id" });
+    sessionsStore.createIndex("by-type", "type", { unique: false });
+    sessionsStore.createIndex("by-startedAt", "startedAt", { unique: false });
+    sessionsStore.createIndex("by-completed", "completed", { unique: false });
 
     // Streaks: objectStore keyed by dateString 'YYYY-MM-DD'
-    db.createObjectStore(STORES.STREAKS, { keyPath: 'date' });
+    db.createObjectStore(STORES.STREAKS, { keyPath: "date" });
 
     // Achievements: objectStore keyed by achievementId
-    const achievementsStore = db.createObjectStore(STORES.ACHIEVEMENTS, { keyPath: 'id' });
-    achievementsStore.createIndex('by-unlockedAt', 'unlockedAt', { unique: false });
+    const achievementsStore = db.createObjectStore(STORES.ACHIEVEMENTS, { keyPath: "id" });
+    achievementsStore.createIndex("by-unlockedAt", "unlockedAt", { unique: false });
 
     // Sound packs: static bundled data (no user mutations needed at v1)
     db.createObjectStore(STORES.SOUND_PACKS);
@@ -121,7 +121,7 @@ export class POMDatabase {
   }
 
   // Sessions API
-  async addSession(session: Omit<Session, 'id'>): Promise<Session> {
+  async addSession(session: Omit<Session, "id">): Promise<Session> {
     const db = await this.requireDb();
     const id = crypto.randomUUID();
     const record: Session = { ...session, id };
@@ -143,7 +143,7 @@ export class POMDatabase {
 
   async getCompletedWorkSessions(): Promise<Session[]> {
     const db = await this.requireDb();
-    const sessions = await db.getAllFromIndex(STORES.SESSIONS, 'by-type', 'work');
+    const sessions = await db.getAllFromIndex(STORES.SESSIONS, "by-type", "work");
     return sessions.filter((s) => s.completed);
   }
 
@@ -178,7 +178,8 @@ export class POMDatabase {
     const delta = Math.min(1, Math.max(0, progress));
     const nextProgress = Math.min(1, (existing?.progress ?? 0) + delta);
     // unlockedAt only stamped once progress actually reaches 1.
-    const unlockedAt = existing?.unlockedAt ?? (nextProgress >= 1 ? new Date().toISOString() : null);
+    const unlockedAt =
+      existing?.unlockedAt ?? (nextProgress >= 1 ? new Date().toISOString() : null);
     await db.put(STORES.ACHIEVEMENTS, { id, unlockedAt, progress: nextProgress }, id);
   }
 
@@ -213,7 +214,7 @@ export class POMDatabase {
     const db = await this.requireDb();
     const tx = db.transaction(
       [STORES.SETTINGS, STORES.SESSIONS, STORES.STREAKS, STORES.ACHIEVEMENTS],
-      'readwrite',
+      "readwrite",
     );
     if (payload.settings) {
       await tx.objectStore(STORES.SETTINGS).put({ ...payload.settings }, DEFAULT_SETTINGS_KEY);
@@ -240,7 +241,7 @@ export class POMDatabase {
     const db = await this.requireDb();
     const tx = db.transaction(
       [STORES.SETTINGS, STORES.SESSIONS, STORES.STREAKS, STORES.ACHIEVEMENTS],
-      'readwrite',
+      "readwrite",
     );
     await Promise.all([
       tx.objectStore(STORES.SETTINGS).clear(),

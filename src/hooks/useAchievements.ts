@@ -1,9 +1,8 @@
 // Achievement loading + unlock evaluation (docs/DATABASE.md achievement IDs).
-import { computed, signal } from '@preact/signals';
-
-import { db } from '../lib/db.ts';
-import { ACHIEVEMENT_DEFS, computeProgress, mergeAchievements } from '../lib/achievements.ts';
-import type { Achievement, AchievementContext, AchievementDef } from '../types/index.ts';
+import { computed, signal } from "@preact/signals";
+import { ACHIEVEMENT_DEFS, computeProgress, mergeAchievements } from "../lib/achievements.ts";
+import { db } from "../lib/db.ts";
+import type { Achievement, AchievementContext, AchievementDef } from "../types/index.ts";
 
 const achievementsState = signal<Achievement[]>([]);
 const loaded = signal(false);

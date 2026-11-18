@@ -3,8 +3,8 @@
 
 export function toISODate(date: Date): string {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -13,7 +13,7 @@ export function todayISODate(): string {
 }
 
 export function parseISODate(date: string): Date {
-  const [year, month, day] = date.split('-').map(Number);
+  const [year, month, day] = date.split("-").map(Number);
   return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
 }
 
@@ -71,17 +71,17 @@ export function isInRange(iso: string, start: Date, end: Date): boolean {
   return ts >= start.getTime() && ts < end.getTime();
 }
 
-export const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+export const WEEKDAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 export function shortWeekdayLabel(iso: string): string {
   const d = new Date(iso);
   const idx = Number.isNaN(d.getTime()) ? 0 : d.getDay();
-  return WEEKDAY_SHORT[idx] ?? 'Sun';
+  return WEEKDAY_SHORT[idx] ?? "Sun";
 }
 
 export function monthDayLabel(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
+  if (Number.isNaN(d.getTime())) return "";
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
@@ -100,5 +100,5 @@ export function formatClock(totalSeconds: number): string {
   const clamped = Math.max(0, Math.ceil(totalSeconds));
   const minutes = Math.floor(clamped / 60);
   const seconds = clamped % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }

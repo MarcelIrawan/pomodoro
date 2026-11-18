@@ -1,8 +1,8 @@
 // Sound pack picker (F17) + per-pack preview.
-import { preloadSoundPack, playCompletionSound } from '../../hooks/useAudio.ts';
-import { SOUND_PACKS, type SoundPackName } from '../../types/index.ts';
-import { IconVolume } from '../ui/Icons.tsx';
-import { cn } from '../../utils/cn.ts';
+import { playCompletionSound, preloadSoundPack } from "../../hooks/useAudio.ts";
+import { SOUND_PACKS, type SoundPackName } from "../../types/index.ts";
+import { cn } from "../../utils/cn.ts";
+import { IconVolume } from "../ui/Icons.tsx";
 
 export function SoundPackPicker({
   soundPack,
@@ -18,7 +18,10 @@ export function SoundPackPicker({
           key={pack.id}
           role="radio"
           aria-checked={soundPack === pack.id}
-          class={cn('sound-picker__option', soundPack === pack.id && 'sound-picker__option--active')}
+          class={cn(
+            "sound-picker__option",
+            soundPack === pack.id && "sound-picker__option--active",
+          )}
           onClick={() => {
             onChange(pack.id);
             preloadSoundPack(pack.id);
@@ -33,12 +36,12 @@ export function SoundPackPicker({
             aria-label={`Preview ${pack.label} sound pack`}
             onClick={(event) => {
               event.stopPropagation();
-              playCompletionSound('work');
+              playCompletionSound("work");
             }}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
+              if (event.key === "Enter" || event.key === " ") {
                 event.stopPropagation();
-                playCompletionSound('work');
+                playCompletionSound("work");
               }
             }}
           >

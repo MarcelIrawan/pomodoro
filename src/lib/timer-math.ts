@@ -1,6 +1,6 @@
 // Timer math helpers — pure functions, unit tested.
-import type { Phase } from '../types/index.ts';
-import { formatClock } from './date.ts';
+import type { Phase } from "../types/index.ts";
+import { formatClock } from "./date.ts";
 
 export function remainingMs(endTimeMs: number, nowMs: number): number {
   return Math.max(0, endTimeMs - nowMs);
@@ -18,11 +18,11 @@ export function phasePlannedSeconds(
   longBreakMinutes: number,
 ): number {
   switch (phase) {
-    case 'work':
+    case "work":
       return workMinutes * 60;
-    case 'shortBreak':
+    case "shortBreak":
       return shortBreakMinutes * 60;
-    case 'longBreak':
+    case "longBreak":
       return longBreakMinutes * 60;
   }
 }
@@ -36,12 +36,12 @@ export function nextPhase(
   completedPhase: Phase,
   cycleIndex: number,
 ): { phase: Phase; cycleIndex: number } {
-  if (completedPhase === 'work') {
-    if (cycleIndex % 4 === 3) return { phase: 'longBreak', cycleIndex };
-    return { phase: 'shortBreak', cycleIndex: cycleIndex + 1 };
+  if (completedPhase === "work") {
+    if (cycleIndex % 4 === 3) return { phase: "longBreak", cycleIndex };
+    return { phase: "shortBreak", cycleIndex: cycleIndex + 1 };
   }
-  if (completedPhase === 'longBreak') return { phase: 'work', cycleIndex: 0 };
-  return { phase: 'work', cycleIndex };
+  if (completedPhase === "longBreak") return { phase: "work", cycleIndex: 0 };
+  return { phase: "work", cycleIndex };
 }
 
 /** True when the work session at `cycleIndex` leads into a long break. */

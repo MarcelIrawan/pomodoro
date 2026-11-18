@@ -1,12 +1,13 @@
 // Stats screen (F9, F12, F13): weekly/monthly charts, streak badge, achievements.
-import { WeeklyBarChart } from '../components/stats/WeeklyBarChart.tsx';
-import { MonthlyLineChart } from '../components/stats/MonthlyLineChart.tsx';
-import { AchievementGallery } from '../components/stats/AchievementGallery.tsx';
-import { StreakBadge } from '../components/stats/StreakBadge.tsx';
-import { Card } from '../components/ui/Card.tsx';
-import { useSessions } from '../hooks/useSessions.ts';
-import { bestStreak, currentStreak } from '../hooks/useStreaks.ts';
-import { formatDuration } from '../lib/date.ts';
+
+import { AchievementGallery } from "../components/stats/AchievementGallery.tsx";
+import { MonthlyLineChart } from "../components/stats/MonthlyLineChart.tsx";
+import { StreakBadge } from "../components/stats/StreakBadge.tsx";
+import { WeeklyBarChart } from "../components/stats/WeeklyBarChart.tsx";
+import { Card } from "../components/ui/Card.tsx";
+import { useSessions } from "../hooks/useSessions.ts";
+import { bestStreak, currentStreak } from "../hooks/useStreaks.ts";
+import { formatDuration } from "../lib/date.ts";
 
 export function StatsScreen() {
   const { stats, monthHistogram } = useSessions();
@@ -19,7 +20,9 @@ export function StatsScreen() {
     <main class="screen screen--stats">
       <div class="screen__inner">
         <h2 class="screen__title">Stats</h2>
-        <p class="screen__subtitle">Progress over time — all computed locally from your sessions.</p>
+        <p class="screen__subtitle">
+          Progress over time — all computed locally from your sessions.
+        </p>
 
         <div class="stats-overview">
           <Card class="stats-overview__streak">

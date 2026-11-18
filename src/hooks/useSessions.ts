@@ -1,16 +1,11 @@
 // Sessions CRUD + derived histogram stats (F8, F9, F10).
 // Signals mirror IndexedDB; stats are computed, never stored (docs/DATABASE.md).
 
-import { computed, signal } from '@preact/signals';
-
-import { db } from '../lib/db.ts';
-import { toISODate, todayISODate } from '../lib/date.ts';
-import {
-  completedWorkSessions,
-  focusSecondsByDay,
-  totalFocusSeconds,
-} from '../lib/stats.ts';
-import type { Session } from '../types/index.ts';
+import { computed, signal } from "@preact/signals";
+import { todayISODate, toISODate } from "../lib/date.ts";
+import { db } from "../lib/db.ts";
+import { completedWorkSessions, focusSecondsByDay, totalFocusSeconds } from "../lib/stats.ts";
+import type { Session } from "../types/index.ts";
 
 const sessionsState = signal<Session[]>([]);
 const loaded = signal(false);
@@ -24,9 +19,7 @@ export async function loadSessions(): Promise<Session[]> {
   return sessions;
 }
 
-export async function addSession(
-  input: Omit<Session, 'id'>,
-): Promise<Session> {
+export async function addSession(input: Omit<Session, "id">): Promise<Session> {
   const record = await db.addSession(input);
   sessionsState.value = [record, ...sessionsState.value].sort((a, b) =>
     a.startedAt < b.startedAt ? 1 : -1,

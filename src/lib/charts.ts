@@ -48,7 +48,9 @@ export function linePoints(
   const n = values.length;
   if (n === 0) return [];
   if (n === 1) {
-    return [{ x: pad + innerWidth / 2, y: pad + innerHeight - (values[0] ?? 0) / max * innerHeight }];
+    return [
+      { x: pad + innerWidth / 2, y: pad + innerHeight - ((values[0] ?? 0) / max) * innerHeight },
+    ];
   }
   const step = innerWidth / (n - 1);
   return values.map((value, i) => ({
@@ -59,7 +61,9 @@ export function linePoints(
 
 /** `d` attribute for a polyline through the points. */
 export function linePath(points: LinePoint[]): string {
-  return points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
+  return points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)},${p.y.toFixed(2)}`)
+    .join(" ");
 }
 
 /**

@@ -1,8 +1,8 @@
 // Accordion section for SettingsScreen (F16/F17): accessible expand/collapse.
-import type { JSX, ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
-import { IconChevronDown } from '../ui/Icons.tsx';
-import { cn } from '../../utils/cn.ts';
+import type { ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
+import { cn } from "../../utils/cn.ts";
+import { IconChevronDown } from "../ui/Icons.tsx";
 
 export interface AccordionProps {
   title: string;
@@ -13,7 +13,7 @@ export interface AccordionProps {
 
 export function Accordion({ title, subtitle, defaultOpen = false, children }: AccordionProps) {
   const [open, setOpen] = useState(defaultOpen);
-  const panelId = `accordion-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const panelId = `accordion-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
   return (
     <section class="accordion">
@@ -27,7 +27,10 @@ export function Accordion({ title, subtitle, defaultOpen = false, children }: Ac
           <span class="accordion__title">{title}</span>
           {subtitle && <span class="accordion__subtitle">{subtitle}</span>}
         </span>
-        <IconChevronDown size={18} class={cn('accordion__chevron', open && 'accordion__chevron--open')} />
+        <IconChevronDown
+          size={18}
+          class={cn("accordion__chevron", open && "accordion__chevron--open")}
+        />
       </button>
       {open && (
         <div id={panelId} class="accordion__panel" role="region" aria-label={title}>

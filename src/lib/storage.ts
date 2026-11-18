@@ -1,11 +1,11 @@
 // Keyval helpers for settings + runtime timer state in localStorage.
 // Used to prevent theme flash and to survive tab close/reopen (F-Reliability).
 
-export const SETTINGS_THEME_KEY = 'pomodoro.settings.theme';
-export const RUNTIME_STATE_KEY = 'pomodoro.runtime.timer';
+export const SETTINGS_THEME_KEY = "pomodoro.settings.theme";
+export const RUNTIME_STATE_KEY = "pomodoro.runtime.timer";
 
 export interface RuntimeTimerState {
-  phase: 'work' | 'shortBreak' | 'longBreak';
+  phase: "work" | "shortBreak" | "longBreak";
   isRunning: boolean;
   remainingSeconds: number;
   plannedSeconds: number;
@@ -42,15 +42,13 @@ export function removeKey(key: string): void {
 export function readRuntimeTimerState(): RuntimeTimerState | null {
   const state = readJSON<RuntimeTimerState>(RUNTIME_STATE_KEY);
   if (!state) return null;
-  if (typeof state.remainingSeconds !== 'number' || typeof state.savedAt !== 'number') {
+  if (typeof state.remainingSeconds !== "number" || typeof state.savedAt !== "number") {
     return null;
   }
   return state;
 }
 
-export function writeRuntimeTimerState(
-  state: Omit<RuntimeTimerState, 'savedAt'>,
-): void {
+export function writeRuntimeTimerState(state: Omit<RuntimeTimerState, "savedAt">): void {
   writeJSON(RUNTIME_STATE_KEY, { ...state, savedAt: Date.now() });
 }
 

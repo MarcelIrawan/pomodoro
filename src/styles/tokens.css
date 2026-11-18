@@ -1,6 +1,7 @@
 /* Design tokens (ADR-002): plain CSS custom properties, themable via data-attributes. */
 :root {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --space-1: 0.25rem;
@@ -42,7 +43,7 @@
   --focus-ring: #ff7a59;
 }
 
-[data-accent='mint'] {
+[data-accent="mint"] {
   --accent: #3ddc97;
   --accent-strong: #25b87d;
   --accent-soft: #dff7ec;
@@ -50,7 +51,7 @@
   --focus-ring: #3ddc97;
 }
 
-[data-accent='lavender'] {
+[data-accent="lavender"] {
   --accent: #a78bfa;
   --accent-strong: #8b6cf0;
   --accent-soft: #efeafd;
@@ -58,7 +59,7 @@
   --focus-ring: #a78bfa;
 }
 
-[data-accent='sunset'] {
+[data-accent="sunset"] {
   --accent: #fb923c;
   --accent-strong: #ea720f;
   --accent-soft: #ffeedd;
@@ -66,7 +67,7 @@
   --focus-ring: #fb923c;
 }
 
-[data-accent='ocean'] {
+[data-accent="ocean"] {
   --accent: #38bdf8;
   --accent-strong: #1d9be0;
   --accent-soft: #dff2fd;
@@ -74,7 +75,7 @@
   --focus-ring: #38bdf8;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   --bg: #171110;
   --bg-subtle: #211917;
   --fg: #f5ece7;
@@ -98,7 +99,7 @@
 .reduced-motion *,
 .reduced-motion *::before,
 .reduced-motion *::after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms;
+  animation-iteration-count: 1;
+  transition-duration: 0.01ms;
 }

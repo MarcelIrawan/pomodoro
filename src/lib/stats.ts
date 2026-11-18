@@ -1,8 +1,8 @@
 // Pure aggregation helpers over Session records — no DOM, no idb.
-import type { Session } from '../types/index.ts';
+import type { Session } from "../types/index.ts";
 
 export function completedWorkSessions(sessions: Session[]): Session[] {
-  return sessions.filter((s) => s.type === 'work' && s.completed);
+  return sessions.filter((s) => s.type === "work" && s.completed);
 }
 
 export function totalFocusSeconds(sessions: Session[]): number {
@@ -29,7 +29,7 @@ export function totalCompletedWorkSessions(sessions: Session[]): number {
 }
 
 export function experiencedLongBreak(sessions: Session[]): boolean {
-  return sessions.some((s) => s.type === 'longBreak' && s.completed);
+  return sessions.some((s) => s.type === "longBreak" && s.completed);
 }
 
 export function hasNightOwlSession(sessions: Session[]): boolean {

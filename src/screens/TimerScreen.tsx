@@ -1,29 +1,29 @@
 // Timer screen (F1–F6): ring, digital time, phase badge, controls, mini stats, focus mode.
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from "preact/hooks";
 
-import { Controls } from '../components/timer/Controls.tsx';
-import { PhaseBadge, phaseLabel } from '../components/timer/PhaseBadge.tsx';
-import { TimerRing } from '../components/timer/TimerRing.tsx';
-import { TimerDigital } from '../components/timer/TimerDigital.tsx';
-import { Button } from '../components/ui/Button.tsx';
-import { ConfettiBurst, ToastHost, showToast } from '../components/ui/Toast.tsx';
-import { IconFocus } from '../components/ui/Icons.tsx';
-import { maybeTick } from '../hooks/useAudio.ts';
-import { useSessions } from '../hooks/useSessions.ts';
-import { useSettings } from '../hooks/useSettings.ts';
-import { currentStreak, todayStreak } from '../hooks/useStreaks.ts';
+import { Controls } from "../components/timer/Controls.tsx";
+import { PhaseBadge, phaseLabel } from "../components/timer/PhaseBadge.tsx";
+import { TimerDigital } from "../components/timer/TimerDigital.tsx";
+import { TimerRing } from "../components/timer/TimerRing.tsx";
+import { Button } from "../components/ui/Button.tsx";
+import { IconFocus } from "../components/ui/Icons.tsx";
+import { ConfettiBurst, showToast, ToastHost } from "../components/ui/Toast.tsx";
+import { maybeTick } from "../hooks/useAudio.ts";
+import { useSessions } from "../hooks/useSessions.ts";
+import { useSettings } from "../hooks/useSettings.ts";
+import { currentStreak, todayStreak } from "../hooks/useStreaks.ts";
 import {
   handleBeforeUnload,
   handleVisibilityChange,
-  restoreRuntimeState,
-  toggle,
-  skip,
   reset,
+  restoreRuntimeState,
+  skip,
+  toggle,
   useTimer,
-} from '../hooks/useTimer.ts';
-import { focusMode } from '../lib/focus.ts';
-import { ACHIEVEMENT_DEFS } from '../lib/achievements.ts';
-import { formatDuration } from '../lib/date.ts';
+} from "../hooks/useTimer.ts";
+import { ACHIEVEMENT_DEFS } from "../lib/achievements.ts";
+import { formatDuration } from "../lib/date.ts";
+import { focusMode } from "../lib/focus.ts";
 
 let restored = false;
 
@@ -34,18 +34,27 @@ export function TimerScreen() {
   const notifiedPhaseRef = useRef<string | null>(null);
   const lastTickRef = useRef<number>(-1);
   const timer = useTimer();
-  const { phase, isRunning, remainingSeconds, cycleIndex, sessionStartedAt, completedPhase, recentUnlocks, progress } = timer;
+  const {
+    phase,
+    isRunning,
+    remainingSeconds,
+    cycleIndex,
+    sessionStartedAt,
+    completedPhase,
+    recentUnlocks,
+    progress,
+  } = timer;
 
   useEffect(() => {
     if (!restored) {
       restoreRuntimeState();
       restored = true;
     }
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -53,21 +62,21 @@ export function TimerScreen() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      const tag = target?.tagName ?? '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (event.key === ' ' || event.code === 'Space') {
+      const tag = target?.tagName ?? "";
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (event.key === " " || event.code === "Space") {
         event.preventDefault();
         toggle();
-      } else if (event.key.toLowerCase() === 'r') {
+      } else if (event.key.toLowerCase() === "r") {
         reset();
-      } else if (event.key.toLowerCase() === 's') {
+      } else if (event.key.toLowerCase() === "s") {
         skip();
-      } else if (event.key.toLowerCase() === 'f') {
+      } else if (event.key.toLowerCase() === "f") {
         focusMode.value = !focusMode.value;
       }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   // Tick once per second while running (F5).
@@ -84,10 +93,13 @@ export function TimerScreen() {
     const off = completedPhase.subscribe((finished) => {
       if (!finished) return;
       if (!settings.value.reducedMotion) setConfettiTrigger((n) => n + 1);
-      if (finished === 'work') {
-        showToast(`Focus complete! Now ${phaseLabel(phase.value) === 'Focus' ? 'take a breath' : 'back to work'} 🎉`, 'success');
+      if (finished === "work") {
+        showToast(
+          `Focus complete! Now ${phaseLabel(phase.value) === "Focus" ? "take a breath" : "back to work"} 🎉`,
+          "success",
+        );
       } else {
-        showToast('Break over — back to focus 🍅', 'info');
+        showToast("Break over — back to focus 🍅", "info");
       }
     });
     return off;
@@ -98,7 +110,7 @@ export function TimerScreen() {
     const off = recentUnlocks.subscribe((ids) => {
       for (const id of ids) {
         const def = ACHIEVEMENT_DEFS.find((d) => d.id === id);
-        if (def) showToast(`Achievement unlocked: ${def.title} 🏆`, 'achievement');
+        if (def) showToast(`Achievement unlocked: ${def.title} 🏆`, "achievement");
       }
     });
     return off;
@@ -106,17 +118,21 @@ export function TimerScreen() {
 
   // Gentle nudge when idle > 10 min during a work block (F15).
   useEffect(() => {
-    if (phase.value !== 'work' || isRunning.value || !sessionStartedAt.value) return;
+    if (phase.value !== "work" || isRunning.value || !sessionStartedAt.value) return;
     if (!settings.value.notificationsEnabled) return;
     const start = new Date(sessionStartedAt.value).getTime();
     const key = `${sessionStartedAt.value}`;
     if (notifiedPhaseRef.current === key) return;
     if (Date.now() - start < 10 * 60 * 1000) return;
     notifiedPhaseRef.current = key;
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      new Notification('Pomodoro nudge', {
-        body: 'Still there? Press Space to start your focus block.',
-        tag: 'pomodoro-idle-nudge',
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "granted"
+    ) {
+      new Notification("Pomodoro nudge", {
+        body: "Still there? Press Space to start your focus block.",
+        tag: "pomodoro-idle-nudge",
       });
     }
   });
@@ -129,7 +145,7 @@ export function TimerScreen() {
   const goalRatio = Math.min(1, todayFocus / goalSeconds);
 
   return (
-    <main class={`screen screen--timer${focusMode.value ? ' screen--focus' : ''}`}>
+    <main class={`screen screen--timer${focusMode.value ? " screen--focus" : ""}`}>
       <ToastHost />
       <ConfettiBurst trigger={confettiTrigger} />
       <div class="screen__inner timer-layout">
@@ -174,20 +190,33 @@ export function TimerScreen() {
 
         {!focusMode.value && (
           <div class="timer-layout__focus-toggle">
-            <Button variant="quiet" onClick={() => { focusMode.value = true; }} aria-label="Enter focus mode (F)">
+            <Button
+              variant="quiet"
+              onClick={() => {
+                focusMode.value = true;
+              }}
+              aria-label="Enter focus mode (F)"
+            >
               <IconFocus size={16} />
               <span>Focus mode</span>
             </Button>
           </div>
         )}
         {focusMode.value && (
-          <button class="focus-exit" onClick={() => { focusMode.value = false; }}>
+          <button
+            class="focus-exit"
+            onClick={() => {
+              focusMode.value = false;
+            }}
+          >
             Exit focus mode (F)
           </button>
         )}
         {ready.value === false && <p class="sr-only">Loading history…</p>}
-        {todayStreak.value && todayStreak.value.goalMet && (
-          <p class="goal-met" role="status">Goal met for today 🎯</p>
+        {todayStreak.value?.goalMet && (
+          <p class="goal-met" role="status">
+            Goal met for today 🎯
+          </p>
         )}
       </div>
     </main>

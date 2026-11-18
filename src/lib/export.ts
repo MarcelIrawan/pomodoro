@@ -1,7 +1,8 @@
 // CSV / JSON export helpers for sessions (F11, F20).
-import type { BackupPayload, Session } from '../types/index.ts';
+import type { BackupPayload, Session } from "../types/index.ts";
 
-const CSV_HEADER = 'id,startedAt,endedAt,type,plannedDuration,actualDuration,completed,tags,notes,cycleIndex';
+const CSV_HEADER =
+  "id,startedAt,endedAt,type,plannedDuration,actualDuration,completed,tags,notes,cycleIndex";
 
 function csvEscape(value: string): string {
   if (/[",\n]/.test(value)) {
@@ -15,19 +16,19 @@ export function sessionsToCSV(sessions: Session[]): string {
     [
       s.id,
       s.startedAt,
-      s.endedAt ?? '',
+      s.endedAt ?? "",
       s.type,
       String(s.plannedDuration),
       String(s.actualDuration),
-      s.completed ? 'true' : 'false',
-      s.tags.join(';'),
-      s.notes ?? '',
+      s.completed ? "true" : "false",
+      s.tags.join(";"),
+      s.notes ?? "",
       String(s.cycleIndex),
     ]
       .map(csvEscape)
-      .join(','),
+      .join(","),
   );
-  return [CSV_HEADER, ...rows].join('\r\n');
+  return [CSV_HEADER, ...rows].join("\r\n");
 }
 
 export function sessionsToJSON(sessions: Session[]): string {
@@ -41,22 +42,22 @@ export function backupToJSON(backup: BackupPayload): string {
 /** Validate an arbitrary JSON import payload and normalize sessions. */
 export function parseBackupPayload(json: string): BackupPayload {
   const parsed = JSON.parse(json) as BackupPayload;
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Backup file is not a valid JSON object.');
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("Backup file is not a valid JSON object.");
   }
   if (parsed.version !== 1) {
     throw new Error(`Unsupported backup version: ${String(parsed.version)}`);
   }
   if (!Array.isArray(parsed.sessions)) {
-    throw new Error('Backup is missing the sessions array.');
+    throw new Error("Backup is missing the sessions array.");
   }
   for (const [index, session] of parsed.sessions.entries()) {
     if (
-      typeof session.id !== 'string' ||
-      typeof session.startedAt !== 'string' ||
-      typeof session.type !== 'string' ||
-      typeof session.plannedDuration !== 'number' ||
-      typeof session.cycleIndex !== 'number'
+      typeof session.id !== "string" ||
+      typeof session.startedAt !== "string" ||
+      typeof session.type !== "string" ||
+      typeof session.plannedDuration !== "number" ||
+      typeof session.cycleIndex !== "number"
     ) {
       throw new Error(`Session #${index + 1} is malformed.`);
     }
@@ -67,7 +68,7 @@ export function parseBackupPayload(json: string): BackupPayload {
 export function downloadTextFile(filename: string, text: string, mimeType: string): void {
   const blob = new Blob([text], { type: mimeType });
   const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
+  const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = filename;
   document.body.appendChild(anchor);

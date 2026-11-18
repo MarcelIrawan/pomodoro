@@ -1,6 +1,6 @@
 // Monthly line chart of sessions per day (F9, ADR-005 hand-rolled SVG).
-import { linePath, linePoints } from '../../lib/charts.ts';
-import { monthDayLabel } from '../../lib/date.ts';
+import { linePath, linePoints } from "../../lib/charts.ts";
+import { monthDayLabel } from "../../lib/date.ts";
 
 export interface DaySessions {
   day: string;
@@ -45,13 +45,13 @@ export function MonthlyLineChart({ data }: { data: DaySessions[] }) {
             cy={point.y}
             r={isPeak ? 4 : 2.5}
             class="chart__dot"
-            aria-label={`${monthDayLabel(data[index]?.day ?? '')}: ${values[index] ?? 0} sessions`}
+            aria-label={`${monthDayLabel(data[index]?.day ?? "")}: ${values[index] ?? 0} sessions`}
           />
         );
       })}
       <text x={pad} y={12} class="chart__axis">{`${max} sess`}</text>
       <text x={width - pad} y={height - 4} class="chart__axis" textAnchor="end">
-        {monthDayLabel(data[data.length - 1]?.day ?? '')}
+        {monthDayLabel(data[data.length - 1]?.day ?? "")}
       </text>
     </svg>
   );

@@ -1,20 +1,20 @@
 // Lightweight toast system: module-level signal list + <ToastHost/> mounted in App.
-import { signal } from '@preact/signals';
-import { useEffect, useState } from 'preact/hooks';
-import { IconCheck, IconClose, IconSparkles } from './Icons.tsx';
-import { cn } from '../../utils/cn.ts';
+import { signal } from "@preact/signals";
+import { useEffect, useState } from "preact/hooks";
+import { cn } from "../../utils/cn.ts";
+import { IconCheck, IconClose, IconSparkles } from "./Icons.tsx";
 
 export interface ToastItem {
   id: number;
   message: string;
-  kind: 'success' | 'info' | 'achievement' | 'error';
+  kind: "success" | "info" | "achievement" | "error";
 }
 
 const toasts = signal<ToastItem[]>([]);
 let nextId = 1;
 const TOAST_MS = 4000;
 
-export function showToast(message: string, kind: ToastItem['kind'] = 'info'): void {
+export function showToast(message: string, kind: ToastItem["kind"] = "info"): void {
   const id = nextId++;
   toasts.value = [...toasts.value, { id, message, kind }];
   setTimeout(() => {
@@ -32,11 +32,11 @@ export function ToastHost() {
   return (
     <div class="toast-host" role="status" aria-live="polite" aria-atomic="false">
       {items.map((toast) => (
-        <div key={toast.id} class={cn('toast', `toast--${toast.kind}`)}>
+        <div key={toast.id} class={cn("toast", `toast--${toast.kind}`)}>
           <span class="toast__icon" aria-hidden="true">
-            {toast.kind === 'achievement' ? (
+            {toast.kind === "achievement" ? (
               <IconSparkles size={18} />
-            ) : toast.kind === 'success' ? (
+            ) : toast.kind === "success" ? (
               <IconCheck size={18} />
             ) : (
               <IconCheck size={18} />
@@ -74,10 +74,10 @@ export function ConfettiBurst({ trigger }: { trigger: number }) {
           key={p.id}
           class="confetti-particle"
           style={{
-            '--dx': `${p.dx.toFixed(1)}px`,
-            '--dy': `${p.dy.toFixed(1)}px`,
-            '--hue': `${p.hue}`,
-            '--delay': `${p.delay}ms`,
+            "--dx": `${p.dx.toFixed(1)}px`,
+            "--dy": `${p.dy.toFixed(1)}px`,
+            "--hue": `${p.hue}`,
+            "--delay": `${p.delay}ms`,
           }}
         />
       ))}

@@ -1,7 +1,7 @@
 // Achievement gallery (F13): unlocked/locked cards with progress bars.
-import { mergedAchievements } from '../../hooks/useAchievements.ts';
-import { IconLock, IconTrophy } from '../ui/Icons.tsx';
-import { cn } from '../../utils/cn.ts';
+import { mergedAchievements } from "../../hooks/useAchievements.ts";
+import { cn } from "../../utils/cn.ts";
+import { IconLock, IconTrophy } from "../ui/Icons.tsx";
 
 export function AchievementGallery() {
   const merged = mergedAchievements.value;
@@ -13,8 +13,8 @@ export function AchievementGallery() {
         return (
           <article
             key={def.id}
-            class={cn('achievement', unlocked && 'achievement--unlocked')}
-            aria-label={`${def.title}: ${unlocked ? 'unlocked' : `${Math.round(progress * 100)} percent complete`}`}
+            class={cn("achievement", unlocked && "achievement--unlocked")}
+            aria-label={`${def.title}: ${unlocked ? "unlocked" : `${Math.round(progress * 100)} percent complete`}`}
           >
             <div class="achievement__icon" aria-hidden="true">
               {unlocked ? <IconTrophy size={26} /> : <IconLock size={26} />}

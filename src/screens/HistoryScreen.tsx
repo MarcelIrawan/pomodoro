@@ -1,18 +1,18 @@
 // History screen (F8–F11): heatmap, tag/date filters, session list, CSV/JSON export.
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useState } from "preact/hooks";
 
-import { CalendarHeatmap } from '../components/history/CalendarHeatmap.tsx';
-import { ExportButton } from '../components/history/ExportButton.tsx';
-import { SessionList } from '../components/history/SessionList.tsx';
-import { Card } from '../components/ui/Card.tsx';
-import { useSessions, allTags } from '../hooks/useSessions.ts';
-import { useSettings } from '../hooks/useSettings.ts';
+import { CalendarHeatmap } from "../components/history/CalendarHeatmap.tsx";
+import { ExportButton } from "../components/history/ExportButton.tsx";
+import { SessionList } from "../components/history/SessionList.tsx";
+import { Card } from "../components/ui/Card.tsx";
+import { allTags, useSessions } from "../hooks/useSessions.ts";
+import { useSettings } from "../hooks/useSettings.ts";
 
 export function HistoryScreen() {
   const { sessions } = useSessions();
   const { settings } = useSettings();
   const [tagFilter, setTagFilter] = useState<string | null>(null);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const tags = useMemo(() => allTags(), [sessions.value]);
 
@@ -49,7 +49,7 @@ export function HistoryScreen() {
           <div class="filter-row">
             <div class="filter-chips" role="group" aria-label="Filter by tag">
               <button
-                class={`chip${tagFilter === null ? ' chip--active' : ''}`}
+                class={`chip${tagFilter === null ? " chip--active" : ""}`}
                 onClick={() => setTagFilter(null)}
                 aria-pressed={tagFilter === null}
               >
@@ -58,7 +58,7 @@ export function HistoryScreen() {
               {tags.map((tag) => (
                 <button
                   key={tag}
-                  class={`chip${tagFilter === tag ? ' chip--active' : ''}`}
+                  class={`chip${tagFilter === tag ? " chip--active" : ""}`}
                   onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
                   aria-pressed={tagFilter === tag}
                 >
@@ -79,7 +79,7 @@ export function HistoryScreen() {
 
         <Card
           title="Sessions"
-          subtitle={`${filtered.length} shown${tagFilter ? `, tagged “${tagFilter}”` : ''}`}
+          subtitle={`${filtered.length} shown${tagFilter ? `, tagged “${tagFilter}”` : ""}`}
         >
           <div class="history-toolbar">
             <ExportButton sessions={filtered} />

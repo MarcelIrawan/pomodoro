@@ -6,11 +6,11 @@ export function cn(...parts: ClassPart[]): string {
   const resolved: string[] = [];
   for (const part of parts) {
     if (!part) continue;
-    if (typeof part === 'string') {
+    if (typeof part === "string") {
       resolved.push(part);
-    } else if (typeof part.value === 'string' && part.value) {
+    } else if (typeof part.value === "string" && part.value) {
       resolved.push(part.value);
     }
   }
-  return resolved.join(' ');
+  return resolved.join(" ");
 }

@@ -1,12 +1,19 @@
 // Year heatmap of daily focus time (F9, GitHub-style contribution grid).
-import { buildHeatmap } from '../../lib/stats.ts';
-import { toISODate } from '../../lib/date.ts';
-import type { Session } from '../../types/index.ts';
-import { cn } from '../../utils/cn.ts';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+import { toISODate } from "../../lib/date.ts";
+import { buildHeatmap } from "../../lib/stats.ts";
+import type { Session } from "../../types/index.ts";
+import { cn } from "../../utils/cn.ts";
 
-export function CalendarHeatmap({ sessions, goalMinutes }: { sessions: Session[]; goalMinutes: number }) {
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function CalendarHeatmap({
+  sessions,
+  goalMinutes,
+}: {
+  sessions: Session[];
+  goalMinutes: number;
+}) {
   const weeks = buildHeatmap(sessions, 26, toISODate, (d) => d.getDay());
   const goalSeconds = Math.max(1, goalMinutes) * 60;
 
@@ -20,10 +27,10 @@ export function CalendarHeatmap({ sessions, goalMinutes }: { sessions: Session[]
   };
 
   // Month labels along the top, positioned per week column.
-  const monthLabels = weeks.map((week, index) => {
+  const monthLabels = weeks.map((week, _index) => {
     const first = week[0];
     if (!first) return null;
-    const date = new Date(first.date + 'T12:00:00');
+    const date = new Date(`${first.date}T12:00:00`);
     return date.getDate() <= 7 ? MONTHS[date.getMonth()] : null;
   });
 
@@ -31,7 +38,9 @@ export function CalendarHeatmap({ sessions, goalMinutes }: { sessions: Session[]
     <div class="heatmap" role="img" aria-label="Focus heatmap for the last 26 weeks">
       <div class="heatmap__months">
         {monthLabels.map((label, index) => (
-          <span key={index} class="heatmap__month">{label ?? ''}</span>
+          <span key={index} class="heatmap__month">
+            {label ?? ""}
+          </span>
         ))}
       </div>
       <div class="heatmap__grid">
@@ -40,8 +49,8 @@ export function CalendarHeatmap({ sessions, goalMinutes }: { sessions: Session[]
             {week.map((cell) => (
               <div
                 key={cell.date}
-                class={cn('heatmap__cell', `heatmap__cell--${level(cell.focusSeconds)}`)}
-                title={`${cell.date}: ${cell.sessions} session${cell.sessions === 1 ? '' : 's'}, ${Math.round(cell.focusSeconds / 60)} min focus`}
+                class={cn("heatmap__cell", `heatmap__cell--${level(cell.focusSeconds)}`)}
+                title={`${cell.date}: ${cell.sessions} session${cell.sessions === 1 ? "" : "s"}, ${Math.round(cell.focusSeconds / 60)} min focus`}
               />
             ))}
           </div>
@@ -50,7 +59,7 @@ export function CalendarHeatmap({ sessions, goalMinutes }: { sessions: Session[]
       <div class="heatmap__legend" aria-hidden="true">
         <span>Less</span>
         {[0, 1, 2, 3, 4].map((l) => (
-          <span key={l} class={cn('heatmap__cell', `heatmap__cell--${l}`)} />
+          <span key={l} class={cn("heatmap__cell", `heatmap__cell--${l}`)} />
         ))}
         <span>More</span>
       </div>

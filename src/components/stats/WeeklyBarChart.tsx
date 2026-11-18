@@ -1,6 +1,6 @@
 // Weekly bar chart of focus minutes (F9, ADR-005 hand-rolled SVG).
-import { barBoxes } from '../../lib/charts.ts';
-import { shortWeekdayLabel } from '../../lib/date.ts';
+import { barBoxes } from "../../lib/charts.ts";
+import { shortWeekdayLabel } from "../../lib/date.ts";
 
 export interface DayFocus {
   day: string;
@@ -36,7 +36,7 @@ export function WeeklyBarChart({ data }: { data: DayFocus[] }) {
       ))}
       {boxes.map((box, index) => {
         const value = values[index] ?? 0;
-        const day = data[index]?.day ?? '';
+        const day = data[index]?.day ?? "";
         return (
           <g key={index}>
             <rect
@@ -48,12 +48,7 @@ export function WeeklyBarChart({ data }: { data: DayFocus[] }) {
               class="chart__bar"
               aria-label={`${shortWeekdayLabel(day)}: ${Math.round(value)} minutes`}
             />
-            <text
-              x={box.x + box.width / 2}
-              y={height - 4}
-              class="chart__label"
-              textAnchor="middle"
-            >
+            <text x={box.x + box.width / 2} y={height - 4} class="chart__label" textAnchor="middle">
               {shortWeekdayLabel(day)}
             </text>
           </g>

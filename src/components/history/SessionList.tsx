@@ -1,27 +1,21 @@
 // Session list grouped by day (F8). Clicking a row expands notes/tags inline.
-import { useState } from 'preact/hooks';
-import { formatDuration } from '../../lib/date.ts';
-import { cn } from '../../utils/cn.ts';
-import { IconTag } from '../ui/Icons.tsx';
-import type { Session } from '../../types/index.ts';
+import { useState } from "preact/hooks";
+import { formatDuration } from "../../lib/date.ts";
+import type { Session } from "../../types/index.ts";
+import { cn } from "../../utils/cn.ts";
+import { IconTag } from "../ui/Icons.tsx";
 
 function dayKey(session: Session): string {
   return session.startedAt.slice(0, 10);
 }
 
-const TYPE_LABEL: Record<Session['type'], string> = {
-  work: 'Focus',
-  shortBreak: 'Short break',
-  longBreak: 'Long break',
+const TYPE_LABEL: Record<Session["type"], string> = {
+  work: "Focus",
+  shortBreak: "Short break",
+  longBreak: "Long break",
 };
 
-export function SessionList({
-  sessions,
-  limit = 200,
-}: {
-  sessions: Session[];
-  limit?: number;
-}) {
+export function SessionList({ sessions, limit = 200 }: { sessions: Session[]; limit?: number }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const grouped = new Map<string, Session[]>();
@@ -34,7 +28,9 @@ export function SessionList({
 
   if (grouped.size === 0) {
     return (
-      <p class="session-list__empty">No sessions yet — press start on the timer and focus for a while.</p>
+      <p class="session-list__empty">
+        No sessions yet — press start on the timer and focus for a while.
+      </p>
     );
   }
 
@@ -49,15 +45,18 @@ export function SessionList({
               return (
                 <li key={session.id}>
                   <button
-                    class={cn('session-row', expanded && 'session-row--expanded')}
+                    class={cn("session-row", expanded && "session-row--expanded")}
                     onClick={() => setExpandedId(expanded ? null : session.id)}
                     aria-expanded={expanded}
                   >
-                    <span class={cn('session-row__type', `session-row__type--${session.type}`)}>
+                    <span class={cn("session-row__type", `session-row__type--${session.type}`)}>
                       {TYPE_LABEL[session.type]}
                     </span>
                     <span class="session-row__time">
-                      {new Date(session.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(session.startedAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                     <span class="session-row__duration">
                       {formatDuration(session.actualDuration)}
@@ -78,11 +77,13 @@ export function SessionList({
                     <div class="session-row__details">
                       <p class="session-row__meta">
                         Planned {session.plannedDuration} min · Cycle {session.cycleIndex + 1}/4
-                        {session.endedAt ? ` · Ended ${new Date(session.endedAt).toLocaleTimeString()}` : ''}
+                        {session.endedAt
+                          ? ` · Ended ${new Date(session.endedAt).toLocaleTimeString()}`
+                          : ""}
                       </p>
                       {session.notes && <p class="session-row__notes">{session.notes}</p>}
                       {session.tags.length > 0 && (
-                        <p class="session-row__meta">Tags: {session.tags.join(', ')}</p>
+                        <p class="session-row__meta">Tags: {session.tags.join(", ")}</p>
                       )}
                     </div>
                   )}

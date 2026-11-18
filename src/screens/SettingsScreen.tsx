@@ -1,31 +1,31 @@
 // Settings screen (F16–F20): durations, theme, sounds, goals, notifications, data.
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from "preact/hooks";
 
-import { Accordion } from '../components/settings/Accordion.tsx';
-import { DataActions } from '../components/settings/DataActions.tsx';
-import { SoundPackPicker } from '../components/settings/SoundPackPicker.tsx';
-import { ThemePicker } from '../components/settings/ThemePicker.tsx';
-import { Button } from '../components/ui/Button.tsx';
-import { IconBell } from '../components/ui/Icons.tsx';
-import { showToast, ToastHost } from '../components/ui/Toast.tsx';
-import { reloadSessions } from '../hooks/useSessions.ts';
-import { useSettings } from '../hooks/useSettings.ts';
-import { refreshStreaks } from '../hooks/useStreaks.ts';
-import { refreshAchievements } from '../hooks/useAchievements.ts';
-import type { SoundPackName, ThemeName, AccentName } from '../types/index.ts';
+import { Accordion } from "../components/settings/Accordion.tsx";
+import { DataActions } from "../components/settings/DataActions.tsx";
+import { SoundPackPicker } from "../components/settings/SoundPackPicker.tsx";
+import { ThemePicker } from "../components/settings/ThemePicker.tsx";
+import { Button } from "../components/ui/Button.tsx";
+import { IconBell } from "../components/ui/Icons.tsx";
+import { showToast, ToastHost } from "../components/ui/Toast.tsx";
+import { refreshAchievements } from "../hooks/useAchievements.ts";
+import { reloadSessions } from "../hooks/useSessions.ts";
+import { useSettings } from "../hooks/useSettings.ts";
+import { refreshStreaks } from "../hooks/useStreaks.ts";
+import type { AccentName, SoundPackName, ThemeName } from "../types/index.ts";
 
 async function notifyTest(): Promise<void> {
-  if (typeof window === 'undefined' || !('Notification' in window)) {
-    showToast('This browser does not support notifications.', 'error');
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    showToast("This browser does not support notifications.", "error");
     return;
   }
-  if (Notification.permission === 'default') {
+  if (Notification.permission === "default") {
     await Notification.requestPermission();
   }
-  if (Notification.permission === 'granted') {
-    new Notification('Pomodoro', { body: 'Notifications are working 🍅', tag: 'pomodoro-test' });
+  if (Notification.permission === "granted") {
+    new Notification("Pomodoro", { body: "Notifications are working 🍅", tag: "pomodoro-test" });
   } else {
-    showToast('Notification permission was denied.', 'error');
+    showToast("Notification permission was denied.", "error");
   }
 }
 
@@ -67,18 +67,18 @@ function NumberField({
 
 export function SettingsScreen() {
   const { settings, update, ready } = useSettings();
-  const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>('default');
+  const [permission, setPermission] = useState<NotificationPermission | "unsupported">("default");
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
+    if (typeof window !== "undefined" && "Notification" in window) {
       setPermission(Notification.permission);
     } else {
-      setPermission('unsupported');
+      setPermission("unsupported");
     }
   }, []);
 
   const updatePromise = (partial: Parameters<typeof update>[0]) => {
-    void update(partial).catch(() => showToast('Could not save settings.', 'error'));
+    void update(partial).catch(() => showToast("Could not save settings.", "error"));
   };
 
   return (
@@ -88,16 +88,44 @@ export function SettingsScreen() {
         <h2 class="screen__title">Settings</h2>
         <p class="screen__subtitle">All preferences are stored locally in your browser.</p>
 
-        <Accordion title="Timer durations" subtitle="Work, short break and long break lengths" defaultOpen>
+        <Accordion
+          title="Timer durations"
+          subtitle="Work, short break and long break lengths"
+          defaultOpen
+        >
           <div class="settings-grid">
-            <NumberField label="Focus session" value={settings.value.workMinutes} min={1} max={120} suffix="min"
-              onCommit={(workMinutes) => updatePromise({ workMinutes })} />
-            <NumberField label="Short break" value={settings.value.shortBreakMinutes} min={1} max={60} suffix="min"
-              onCommit={(shortBreakMinutes) => updatePromise({ shortBreakMinutes })} />
-            <NumberField label="Long break" value={settings.value.longBreakMinutes} min={1} max={90} suffix="min"
-              onCommit={(longBreakMinutes) => updatePromise({ longBreakMinutes })} />
-            <NumberField label="Daily goal" value={settings.value.dailyGoalMinutes} min={5} max={720} suffix="min/day"
-              onCommit={(dailyGoalMinutes) => updatePromise({ dailyGoalMinutes })} />
+            <NumberField
+              label="Focus session"
+              value={settings.value.workMinutes}
+              min={1}
+              max={120}
+              suffix="min"
+              onCommit={(workMinutes) => updatePromise({ workMinutes })}
+            />
+            <NumberField
+              label="Short break"
+              value={settings.value.shortBreakMinutes}
+              min={1}
+              max={60}
+              suffix="min"
+              onCommit={(shortBreakMinutes) => updatePromise({ shortBreakMinutes })}
+            />
+            <NumberField
+              label="Long break"
+              value={settings.value.longBreakMinutes}
+              min={1}
+              max={90}
+              suffix="min"
+              onCommit={(longBreakMinutes) => updatePromise({ longBreakMinutes })}
+            />
+            <NumberField
+              label="Daily goal"
+              value={settings.value.dailyGoalMinutes}
+              min={5}
+              max={720}
+              suffix="min/day"
+              onCommit={(dailyGoalMinutes) => updatePromise({ dailyGoalMinutes })}
+            />
           </div>
           <div class="settings-toggles">
             <label class="toggle">
@@ -151,10 +179,16 @@ export function SettingsScreen() {
                 min={0}
                 max={100}
                 value={Math.round(settings.value.soundVolume * 100)}
-                onInput={(event) => updatePromise({ soundVolume: Number((event.target as HTMLInputElement).value) / 100 })}
+                onInput={(event) =>
+                  updatePromise({
+                    soundVolume: Number((event.target as HTMLInputElement).value) / 100,
+                  })
+                }
                 aria-label="Sound volume"
               />
-              <span class="number-field__suffix">{Math.round(settings.value.soundVolume * 100)}%</span>
+              <span class="number-field__suffix">
+                {Math.round(settings.value.soundVolume * 100)}%
+              </span>
             </span>
           </label>
           <div class="settings-toggles">
@@ -178,7 +212,11 @@ export function SettingsScreen() {
                 onChange={(event) => {
                   const enabled = (event.target as HTMLInputElement).checked;
                   updatePromise({ notificationsEnabled: enabled });
-                  if (enabled && 'Notification' in window && Notification.permission === 'default') {
+                  if (
+                    enabled &&
+                    "Notification" in window &&
+                    Notification.permission === "default"
+                  ) {
                     void Notification.requestPermission().then(setPermission);
                   }
                 }}
@@ -187,22 +225,44 @@ export function SettingsScreen() {
             </label>
           </div>
           <div class="settings-notify-row">
-            <Button variant="ghost" onClick={() => void notifyTest()} disabled={permission === 'unsupported'}>
+            <Button
+              variant="ghost"
+              onClick={() => void notifyTest()}
+              disabled={permission === "unsupported"}
+            >
               <IconBell size={16} />
               <span>Send test notification</span>
             </Button>
             <span class="settings-notify-status" role="status">
-              {permission === 'granted' ? 'Permission: granted' : permission === 'denied' ? 'Permission: denied (browser blocked)' : permission === 'unsupported' ? 'Not supported' : 'Permission: not yet asked'}
+              {permission === "granted"
+                ? "Permission: granted"
+                : permission === "denied"
+                  ? "Permission: denied (browser blocked)"
+                  : permission === "unsupported"
+                    ? "Not supported"
+                    : "Permission: not yet asked"}
             </span>
           </div>
         </Accordion>
 
         <Accordion title="Keyboard shortcuts" subtitle="Available on the timer screen">
           <dl class="shortcut-list">
-            <div><dt>Space</dt><dd>Start / pause timer</dd></div>
-            <div><dt>R</dt><dd>Reset current phase</dd></div>
-            <div><dt>S</dt><dd>Skip to next phase</dd></div>
-            <div><dt>F</dt><dd>Toggle focus mode</dd></div>
+            <div>
+              <dt>Space</dt>
+              <dd>Start / pause timer</dd>
+            </div>
+            <div>
+              <dt>R</dt>
+              <dd>Reset current phase</dd>
+            </div>
+            <div>
+              <dt>S</dt>
+              <dd>Skip to next phase</dd>
+            </div>
+            <div>
+              <dt>F</dt>
+              <dd>Toggle focus mode</dd>
+            </div>
           </dl>
         </Accordion>
 
@@ -212,7 +272,7 @@ export function SettingsScreen() {
               void reloadSessions();
               void refreshStreaks();
               void refreshAchievements();
-              showToast('All local data cleared.', 'info');
+              showToast("All local data cleared.", "info");
             }}
             onImported={() => {
               void reloadSessions();

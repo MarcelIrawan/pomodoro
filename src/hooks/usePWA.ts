@@ -1,10 +1,11 @@
 // Install prompt + SW update surface (usePWA hook per ADR-003 layout).
-import { useEffect } from 'preact/hooks';
-import { signal } from '@preact/signals';
+
+import { signal } from "@preact/signals";
+import { useEffect } from "preact/hooks";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 const deferredPrompt = signal<BeforeInstallPromptEvent | null>(null);
@@ -21,11 +22,11 @@ export function usePWA() {
       installed.value = true;
       deferredPrompt.value = null;
     };
-    window.addEventListener('beforeinstallprompt', onBeforeInstall);
-    window.addEventListener('appinstalled', onInstalled);
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
     return () => {
-      window.removeEventListener('beforeinstallprompt', onBeforeInstall);
-      window.removeEventListener('appinstalled', onInstalled);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
 
@@ -35,7 +36,7 @@ export function usePWA() {
     prompt.prompt();
     const choice = await prompt.userChoice;
     deferredPrompt.value = null;
-    return choice.outcome === 'accepted';
+    return choice.outcome === "accepted";
   };
 
   return {
